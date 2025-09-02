@@ -1,29 +1,30 @@
 import os
-from flask import Flask, request, render_template
+from flask import Flask, render_template, request
 from openai import OpenAI
 
+# Initialize Flask
 app = Flask(__name__)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Initialize OpenAI client
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    quiz = None
-    error = None
-
+    answer = None
     if request.method == "POST":
-        topic = request.form.get("topic", "").strip()
-        if topic:
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",  # fast & cheap
-                    messages=[
-                        {"role": "system", "content": "You are a helpful quiz generator."},
-                        {"role": "user", "content": f"Generate 3 multiple-choice questions about {topic}. Include 4 options and mark the correct one."}
-                    ],
-                    max_tokens=500
-                )
-                quiz = response.choices[0].message.content
-            except Exception as e:
-                error = f"OpenAI API error: {e}"
+        question = request.form["question"]
 
-    return render_template("index.html", quiz=quiz, error=error)
+        # Call OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": "You are a helpful study assistant."},
+                {"role": "user", "content": question}
+            ]
+        )
+        answer = response.choices[0].message.content
+
+    return render_template("index.html", answer=answer)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
