@@ -1,15 +1,39 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>AI Study Buddy</title>
   <style>
-    body{font-family:Inter,Arial; background:#f5f8fb; margin:0; padding:40px; display:flex; justify-content:center}
-    .card{width:720px; background:#fff; padding:28px; border-radius:12px; box-shadow:0 6px 18px rgba(10,20,40,0.08)}
-    input, button{padding:10px 12px; border-radius:8px; border:1px solid #ddd; font-size:16px}
-    button{cursor:pointer}
-    ul{margin-top:16px}
-    .error{color:#b00020}
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: #f5f8fb;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .card {
+      width: 720px;
+      background: #fff;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(10,20,40,0.08);
+    }
+    input, button {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+    button {
+      cursor: pointer;
+    }
+    ul {
+      margin-top: 16px;
+    }
+    .error {
+      color: #b00020;
+    }
   </style>
 </head>
 <body>
@@ -27,9 +51,9 @@
     {% if quiz %}
       <h3>Generated Quiz</h3>
       <ul>
-      {% for q in quiz %}
-        <li>{{ q }}</li>
-      {% endfor %}
+        {% for q in quiz %}
+          <li>{{ q }}</li>
+        {% endfor %}
       </ul>
     {% endif %}
   </div>
