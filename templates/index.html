@@ -1,61 +1,155 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
   <title>AI Study Buddy</title>
   <style>
     body {
-      font-family: Inter, Arial, sans-serif;
-      background: #f5f8fb;
-      margin: 0;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
+      font-family: Arial, sans-serif;
+      margin: 30px;
     }
-    .card {
-      width: 720px;
-      background: #fff;
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(10,20,40,0.08);
+    .suggestions, .qa-box, .history {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      background: #f9f9f9;
+      border-radius: 5px;
     }
-    input, button {
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      font-size: 16px;
-    }
-    button {
+    .suggestions button {
+      margin: 5px;
+      padding: 8px 12px;
       cursor: pointer;
+      border: 1px solid #007BFF;
+      background: #007BFF;
+      color: white;
+      border-radius: 5px;
     }
-    ul {
-      margin-top: 16px;
+    .suggestions button:hover {
+      background: #0056b3;
     }
-    .error {
-      color: #b00020;
+    .qa-box .question {
+      font-weight: bold;
+      color: #333;
+    }
+    .qa-box .answer {
+      margin-top: 8px;
+    }
+    .history h3 {
+      margin: 0;
+      display: inline-block;
+    }
+    .toggle-btn {
+      margin-left: 10px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: #007BFF;
+      font-size: 14px;
+    }
+    .history-content {
+      display: none;
+      margin-top: 10px;
+    }
+    .history-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 5px;
+      border-bottom: 1px solid #ddd;
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    .history-item .q {
+      font-weight: bold;
+    }
+    .history-item .a {
+      margin-left: 10px;
+    }
+    .latest {
+      background-color: #fff3cd; /* yellow highlight */
+      border: 1px solid #ffeeba;
+    }
+    .clear-btn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      border: 1px solid #dc3545;
+      background: #dc3545;
+      color: white;
+      border-radius: 5px;
+    }
+    .clear-btn:hover {
+      background: #a71d2a;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>AI Study Buddy 📚</h1>
-    <form method="post">
-      <input name="topic" placeholder="Enter a topic (e.g., Photosynthesis)" style="width:70%" required>
-      <button type="submit">Generate Quiz</button>
-    </form>
+  <h1>AI Study Buddy</h1>
 
-    {% if error %}
-      <p class="error">{{ error }}</p>
-    {% endif %}
+  <!-- Question form -->
+  <form method="POST">
+    <input type="text" id="questionInput" name="question" placeholder="Type your question..." required style="width: 70%; padding: 8px;">
+    <button type="submit">Ask</button>
+  </form>
 
-    {% if quiz %}
-      <h3>Generated Quiz</h3>
-      <ul>
-        {% for q in quiz %}
-          <li>{{ q }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+  <!-- Suggested questions -->
+  <div class="suggestions">
+    <h3>Suggested Questions:</h3>
+    <button type="button" onclick="setQuestion('What is photosynthesis?')">What is photosynthesis?</button>
+    <button type="button" onclick="setQuestion('Explain the water cycle')">Explain the water cycle</button>
+    <button type="button" onclick="setQuestion('Who was Albert Einstein?')">Who was Albert Einstein?</button>
+    <button type="button" onclick="setQuestion('What are Newton’s laws of motion?')">What are Newton’s laws of motion?</button>
   </div>
+
+  <!-- Current Q&A -->
+  {% if question and answer %}
+    <div class="qa-box">
+      <h2>Latest Q&A</h2>
+      <div class="question">Q: {{ question }}</div>
+      <div class="answer">A: {{ answer }}</div>
+    </div>
+  {% endif %}
+
+  <!-- History Panel -->
+  {% if history %}
+    <div class="history">
+      <h3>History</h3>
+      <button type="button" class="toggle-btn" onclick="toggleHistory()">[Show]</button>
+      <div class="history-content" id="historyContent">
+        {% for item in history %}
+          <div class="history-item {% if loop.index0 == latest_index %}latest{% endif %}">
+            <div class="q">Q: {{ item.q }}</div>
+            <div class="a">A: {{ item.a }}</div>
+          </div>
+        {% endfor %}
+        <form method="POST">
+          <input type="hidden" name="clear_history" value="1">
+          <button type="submit" class="clear-btn">Clear History</button>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  <script>
+    function setQuestion(text) {
+      document.getElementById("questionInput").value = text;
+    }
+
+    function toggleHistory(forceOpen = false) {
+      const content = document.getElementById("historyContent");
+      const btn = document.querySelector(".toggle-btn");
+      if (forceOpen || content.style.display === "none" || content.style.display === "") {
+        content.style.display = "block";
+        btn.textContent = "[Hide]";
+      } else {
+        content.style.display = "none";
+        btn.textContent = "[Show]";
+      }
+    }
+
+    // Auto-expand history if backend tells us to
+    {% if expand_history %}
+      toggleHistory(true);
+    {% endif %}
+  </script>
 </body>
 </html>
